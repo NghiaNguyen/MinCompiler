@@ -15,7 +15,7 @@ TOKENS = re.compile('|'.join([ID, NUM, FOR, TO, IF, PRINT, STRING, ASSIGN, EQUAL
 
 def parse(text):
   """
-  Our grammar:
+  Our grammar (should be LL grammar):
     prog : stmt* EOF
     stmt : for_stmt | assign_stmt | print_stmt | if_stmt
     for_stmt: FOR ID = NUM to NUM { stmt* }
