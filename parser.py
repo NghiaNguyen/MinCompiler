@@ -31,11 +31,12 @@ def parse(text):
   tokens = TOKENS.findall(text)
   pos = 0
 
-  def next():
-    if pos >= len(tokens):
+  def next(k=0):
+    pos_k = pos + k
+    if pos_k >= len(tokens):
       return EOF
     else:
-      return tokens[pos]
+      return tokens[pos_k]
 
   def scan(tok=None):
     if tok is not None and not re.match(tok, next()):
@@ -44,14 +45,29 @@ def parse(text):
     pos += 1
 
   def for_stmt():
-    scan(FOR)
+    raise NotImplementedError
+
+  def assign_stmt():
+    raise NotImplementedError
+
+  def if_stmt():
+    raise NotImplementedError
+
+  def print_stmt():
+    raise NotImplementedError
 
   def stmt():
     if next() == FOR:
-      for_stmt()
+      return for_stmt()
+    elif next() == IF:
+      return if_stmt()
+    elif next() == PRINT:
+      return print_stmt()
+    elif next() == ID:
+      return assign_stmt()
 
   def prog():
-    root = new Prog_AST()
+    root = Prog_AST()
     while next():
       root.addChild(stmt())
     return root

@@ -16,6 +16,9 @@ def main(argv=None):
   except SyntaxError:
     print("Syntax error.  Rest of tokens:", tokens[pos:])
     sys.exit(1)
+  except Exception as inst:
+    print(type(inst))
+    sys.exit(1)
 
 
 if __name__ == "__main__":
