@@ -2,28 +2,29 @@ import re
 from ast import *
 
 ## Tokens ##
-ID = r'[a-zA-Z]+'
+IDENTIFIER = r'[a-zA-Z]+'
 NUM = r'[0-9]+'
 FOR = r'for'
 IF = r'if'
 TO = r'to'
 PRINT = r'print'
-STRING = r'\'.*\''
+STRING = r'\'.*\'|\".*\"'
 OPS = r'[+-]'
 ASSIGN = r'='
 EQUAL = r'=='
-TOKENS = re.compile('|'.join([ID, NUM, FOR, TO, IF, PRINT, STRING, ASSIGN, EQUAL, OPS]))
+TOKENS = re.compile('|'.join([IDENTIFIER, NUM, FOR, TO, IF, PRINT, STRING, ASSIGN, EQUAL, OPS]))
 
 def parse(text):
   """
   Our grammar (should be LL(k) grammar):
     prog : stmt* EOF
     stmt : for_stmt | assign_stmt | print_stmt | if_stmt
-    for_stmt: FOR ID = NUM to NUM { stmt* }
+    for_stmt: FOR IDENTIFIER = NUM to NUM { stmt* }
     if_stmt : IF equal_expression { stmt* }
-    equal_expression : ID == (ID|NUM)
-    assign_stmt: ID EQUAL expression
-    expression: ID | NUM | STRING | ID OP expression
+    equal_expression : IDENTIFIER == (IDENTIFIER|NUM)
+    assign_stmt: IDENTIFIER EQUAL expression
+    expression: atom | atom OPS expression
+    atom : IDENTIFIER | STRING | NUM
     print_stmt: PRINT expression
   """
 
@@ -37,6 +38,9 @@ def parse(text):
       return EOF
     else:
       return tokens[pos_k]
+
+  def isNext(tok, k=0):
+    return re.match(tok, next(k))
 
   def scan(tok=None):
     if tok is not None and not re.match(tok, next()):
@@ -54,16 +58,32 @@ def parse(text):
     raise NotImplementedError
 
   def print_stmt():
-    raise NotImplementedError
+    scan(PRINT)
+    return Print_AST(expression())
+
+  def expression():
+    #TODO: handle the case with OP
+    return atom()
+
+  def atom():
+    if isNext(IDENTIFIER):
+      print("identifier")
+      return Identifier_AST(scan(IDENTIFIER))
+    elif isNext(STRING):
+      return String_AST(scan(STRING))
+    elif isNext(NUM):
+      return Num_AST(scan(NUM))
+    else:
+      raise SyntaxError
 
   def stmt():
-    if next() == FOR:
+    if isNext(FOR):
       return for_stmt()
-    elif next() == IF:
+    elif isNext(IF):
       return if_stmt()
-    elif next() == PRINT:
+    elif isNext(PRINT):
       return print_stmt()
-    elif next() == ID:
+    elif isNext(IDENTIFIER):
       return assign_stmt()
 
   def prog():
