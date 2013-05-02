@@ -13,11 +13,10 @@ def main(argv=None):
   sourceCode = inFile.read()
   try:
     tree = parse(sourceCode)
+    compiledCode = tree.generateCode()
+    print(compiledCode)
   except SyntaxError:
     print("Syntax error.  Rest of tokens:", tokens[pos:])
-    sys.exit(1)
-  except Exception as inst:
-    print(type(inst))
     sys.exit(1)
 
 

@@ -27,27 +27,42 @@ class AST(object):
 
   def codeGenerate(self, buffer):
     for child in self.children:
-      child.codeGenerate(self, buffer)
+      child.codeGenerate(buffer)
 
 class Prog_AST(AST):
-  pass
+
+  def generateCode(self):
+    buffer = []
+    self.codeGenerate(buffer)
+    return ''.join(buffer)
 
 class Print_AST(AST):
+
   def __init__(self, expr):
     AST.__init__(self, [expr])
     self.expr = expr
 
+  def codeGenerate(self, buffer):
+    buffer.append('print: ')
+    self.expr.codeGenerate(buffer)
+
 class String_AST(AST):
+
   def __init__(self, text):
     AST.__init__(self, [], STRING_TYPE)
-    self.text = text
+    self.text = text.strip(r"\"|'")
+
+  def codeGenerate(self, buffer):
+    buffer.append(self.text)
 
 class Num_AST(AST):
+
   def __init__(self, num):
     AST.__init__(self, [], NUM_TYPE)
     self.num = num
 
 class Identifier_AST(AST):
+
   def __init__(self, id):
     AST.__init__(self, [], UNKNOWN_TYPE)
     self.id = id

@@ -43,10 +43,12 @@ def parse(text):
     return re.match(tok, next(k))
 
   def scan(tok=None):
-    if tok is not None and not re.match(tok, next()):
+    curr = next()
+    if tok is not None and not re.match(tok, curr):
         raise SyntaxError
     nonlocal pos
     pos += 1
+    return curr
 
   def for_stmt():
     raise NotImplementedError
@@ -67,7 +69,6 @@ def parse(text):
 
   def atom():
     if isNext(IDENTIFIER):
-      print("identifier")
       return Identifier_AST(scan(IDENTIFIER))
     elif isNext(STRING):
       return String_AST(scan(STRING))
