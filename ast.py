@@ -1,7 +1,21 @@
+
 VOID_TYPE = 'void_type'
 STRING_TYPE = 'string_type'
 NUM_TYPE = 'num_type'
 UNKNOWN_TYPE = 'unknown_type'
+
+class StringMapper(object):
+  def __init__(self, startAddress):
+    self.stringMap = dict()
+    self.counter = startAddress
+
+  def addString(self, text):
+    if text not in self.stringMap:
+      self.stringMap[text] = counter
+      self.counter = self.counter + len(text)
+
+  def getAddress(self, text):
+    return self.stringMap[text]
 
 class AST(object):
 
@@ -11,6 +25,8 @@ class AST(object):
     else:
       self.children = children
     self.type = type
+    # a global map of constant string addresses across the whole program
+    self.stringMapper = StringMapper(10)
 
   def getType():
     return self.type
@@ -51,6 +67,7 @@ class String_AST(AST):
   def __init__(self, text):
     AST.__init__(self, [], STRING_TYPE)
     self.text = text.strip(r"\"|'")
+    self.address =
 
   def codeGenerate(self, buffer):
     buffer.append(self.text)
